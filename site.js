@@ -3,7 +3,9 @@ import {bomByKey,bomByModule} from './viewer/bom-data.js';
 import {layers} from './viewer/simulation-data.js';
 
 const id=name=>document.getElementById(name);
+const hero=id('product-hero');
 const model=id('model');
+const backIntro=id('back-intro');
 const still=id('model-still');
 const slider=id('travel');
 const controls=Array.from(document.querySelectorAll('button[data-view]'));
@@ -93,8 +95,26 @@ function show(view){
   viewer?.setCamera(views[view].camera);
 }
 
+function enterExplore(){
+  if(hero.hasAttribute('data-exploring'))return;
+  hero.setAttribute('data-exploring','');
+  id('intro').hidden=true;
+  backIntro.hidden=false;
+  model.scrollIntoView({block:'start'});
+}
+
+function leaveExplore(){
+  show('front');
+  hero.removeAttribute('data-exploring');
+  id('intro').hidden=false;
+  backIntro.hidden=true;
+  hero.scrollIntoView({block:'start'});
+  id('intro').querySelector('a').focus({preventScroll:true});
+}
+
 function selectPart(key){
   if(!byId[key])return;
+  enterExplore();
   Object.assign(state,{part:key,item:null,isolated:false,layer:key==='logic'?0:1});
   render();
   viewer?.setCamera('angle');
@@ -110,8 +130,16 @@ function selectItem(key){
   render();
 }
 
-for(const button of controls)button.addEventListener('click',()=>show(button.dataset.view));
+for(const button of controls)button.addEventListener('click',()=>{
+  enterExplore();
+  show(button.dataset.view);
+});
+backIntro.addEventListener('click',leaveExplore);
+model.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&hero.hasAttribute('data-exploring'))leaveExplore();
+});
 slider.addEventListener('input',()=>{
+  enterExplore();
   const value=Number(slider.value)/100;
   if(state.part){
     state.layer=value;
@@ -144,9 +172,10 @@ function fallback(){
   render();
 }
 try{
-  const {createViewer}=await import('./viewer/hardware-view.js');
+  const {createViewer}=await import('./viewer/hardware-view.js?v=36fdbc66191e');
   viewer=createViewer(id('viewer'),id('viewer-markers'),{
     select:selectPart,item:selectItem,cameraChanged(){},unavailable:fallback,
+    interacted:enterExplore,
     rendered({triangles,population}){
       if(triangles>0&&model.dataset.webgl==='loading')model.dataset.webgl='live';
       model.dataset.population=String(population);

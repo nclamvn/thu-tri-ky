@@ -296,11 +296,16 @@ export function createViewer(host, markerLayer, callbacks) {
     contacts.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if(gesture?.distance>0&&contacts.size===2){
       desired.zoom=THREE.MathUtils.clamp(gesture.zoom*spacing()/gesture.distance,.65,2.8);
-      wake();return;
+      wake();
+      callbacks.interacted?.();
+      return;
     }
     if(gesture?.id!==event.pointerId)return;
     const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-    if(Math.hypot(dx,dy)>touchLimit)gesture.moved=true;
+    if(!gesture.moved&&Math.hypot(dx,dy)>touchLimit){
+      gesture.moved=true;
+      if(event.pointerType!=='touch'||Math.abs(dx)>Math.abs(dy))callbacks.interacted?.();
+    }
     if(gesture.moved){
       const boardOrbit=inspectingBoard();
       const yawPerPixel=boardOrbit?Math.PI/Math.max(260,width*.68):.009;
@@ -330,6 +335,7 @@ export function createViewer(host, markerLayer, callbacks) {
     event.preventDefault();
     const delta=THREE.MathUtils.clamp(event.deltaY,-150,150);
     zoomBy(Math.exp(-delta*.0016));
+    if(delta!==0)callbacks.interacted?.();
   },{passive:false});
   host.addEventListener('keydown',event=>{
     if(event.target!==host)return;
@@ -338,12 +344,14 @@ export function createViewer(host, markerLayer, callbacks) {
       event.preventDefault();
       orbit(desired.yaw+arrows[event.key][0],desired.pitch+arrows[event.key][1]);
       callbacks.cameraChanged('free');
+      callbacks.interacted?.();
     }else if(['+','-','=','Home'].includes(event.key)){
       event.preventDefault();
       if(event.key==='Home'){
         setCamera('front');
         callbacks.cameraChanged('front');
       }else zoomBy(event.key==='-'?.86:1.16);
+      callbacks.interacted?.();
     }
   });
   function setCamera(preset,boardView=inspectingBoard(),keepZoom=false){
