@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Thư Tri Kỷ, thiết bị đồng hành bằng giọng nói đang được phát triển. Khám phá mô hình 3D, bản vẽ cơ khí và sơ đồ mạch.">
+  <title>Thư Tri Kỷ</title>
+  <link rel="stylesheet" href="./site.css">
+</head>
+<body id="top">
+  <header class="masthead">
+    <a href="#top" class="brand" aria-label="Thư, đầu trang">Thư<span>.</span></a>
+    <nav aria-label="Nội dung">
+      <a href="#model">Mô hình 3D</a>
+      <a href="#drawings">Bản vẽ kỹ thuật</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="intro">
+        <p class="stage">Mẫu thiết kế TK‑EVT0</p>
+        <h1 id="title">Tri Kỷ</h1>
+        <p class="description">Thiết bị đồng hành bằng giọng nói tiếng Việt, với ánh mắt chuyển động theo nhịp trò chuyện.</p>
+        <a class="jump" href="#drawings">Xem bản vẽ <span aria-hidden="true">↓</span></a>
+      </div>
+      <div id="model" class="model" data-webgl="loading">
+        <div class="viewer" id="viewer" tabindex="0" aria-label="Mô hình Tri Kỷ. Dùng phím mũi tên để xoay và Home để về chính diện.">
+          <img id="model-still" src="./media/front.webp" alt="Tri Kỷ nhìn chính diện">
+          <div id="viewer-markers" hidden></div>
+        </div>
+        <div class="view-switch" aria-label="Góc xem mô hình">
+          <button data-view="front" aria-pressed="true">Chính diện</button>
+          <button data-view="rear" aria-pressed="false">Mặt lưng</button>
+          <button data-view="exploded" aria-pressed="false">Phân rã</button>
+        </div>
+        <div class="model-info">
+          <p id="motion-note">Kéo để xoay · Cuộn để phóng</p>
+          <p id="model-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+    <section class="drawings" id="drawings" aria-labelledby="drawings-title">
+      <h2 id="drawings-title">Bản vẽ kỹ thuật</h2>
+      <p>Cấu trúc vỏ, các phân hệ điện tử và kết nối màn hình của mẫu nghiên cứu.</p>
+      <div class="drawing-grid">
+        <article>
+          <a href="./drawings/m-01.svg"><img src="./drawings/m-01.svg" alt="Ba hình chiếu có kích thước của vỏ Tri Kỷ" loading="lazy" width="1160" height="780">
+            <h3>Vỏ và vị trí lắp <span>M‑01</span></h3></a>
+        </article>
+        <article>
+          <a href="./drawings/e-01.svg"><img src="./drawings/e-01.svg" alt="Sơ đồ nguồn, vi điều khiển, micro, loa và màn hình" loading="lazy" width="1160" height="780">
+            <h3>Sơ đồ nguyên lý phân hệ <span>E‑01</span></h3></a>
+        </article>
+        <article>
+          <a href="./drawings/e-02.svg"><img src="./drawings/e-02.svg" alt="Sơ đồ SPI qua IC chuyển mức đến đầu nối màn hình" loading="lazy" width="1160" height="780">
+            <h3>Màn hình và chuyển mức <span>E‑02</span></h3></a>
+        </article>
+        <article>
+          <a href="./drawings/e-03.svg"><img src="./drawings/e-03.svg" alt="Sơ đồ PDM, ngắt micro bằng phần cứng và I²S đến loa" loading="lazy" width="1160" height="780">
+            <h3>Thu âm, ngắt micro và phát loa <span>E‑03</span></h3></a>
+        </article>
+      </div>
+      <p class="scope-note">Mô hình số và sơ đồ EVT0 dùng để duyệt thiết kế. Dung sai cơ khí, hồ sơ PCB và nghiệm thu mẫu thật đang mở.</p>
+    </section>
+  </main>
+  <footer><a href="#top" class="brand">Thư<span>.</span></a><span>Tri Kỷ · Mẫu nghiên cứu</span></footer>
+  <script type="module" src="./site.js"></script>
+</body>
+</html>
