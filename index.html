@@ -26,7 +26,7 @@
       <div id="model" class="model" data-webgl="loading">
         <div class="viewer" id="viewer" tabindex="0" aria-label="Mô hình Tri Kỷ. Dùng phím mũi tên để xoay và Home để về chính diện.">
           <img id="model-still" src="./media/front.webp" alt="Tri Kỷ nhìn chính diện">
-          <div id="viewer-markers" hidden></div>
+          <div id="viewer-markers"></div>
         </div>
         <div class="view-switch" aria-label="Góc xem mô hình">
           <button data-view="front" aria-pressed="true">Chính diện</button>
@@ -37,6 +37,22 @@
           <p id="motion-note">Kéo để xoay · Cuộn để phóng</p>
           <p id="model-status" aria-live="polite"></p>
         </div>
+        <div class="travel-control">
+          <div class="range-label"><label for="travel" id="travel-label">Độ tách lớp</label><output id="travel-value" for="travel">0%</output></div>
+          <input id="travel" type="range" min="0" max="100" value="0" step="1" disabled>
+          <div class="range-ends"><span>Lắp kín</span><span>Tách hết</span></div>
+        </div>
+        <section class="component-panel" aria-labelledby="component-title" id="component-panel" hidden>
+          <button class="text-action" type="button" id="back-model" hidden><span aria-hidden="true">←</span> Về toàn bộ thiết bị</button>
+          <h2 id="component-title">Các cụm linh kiện</h2>
+          <div class="component-readout" id="component-readout" aria-live="polite" hidden>
+            <p id="component-ref"></p>
+            <h3 id="component-name"></h3>
+            <p id="component-purpose"></p>
+            <button class="text-action" type="button" id="show-group" hidden>Hiện cả cụm</button>
+          </div>
+          <ul class="component-list" id="component-list"></ul>
+        </section>
       </div>
     </section>
     <section class="drawings" id="drawings" aria-labelledby="drawings-title">
@@ -44,19 +60,19 @@
       <p>Cấu trúc vỏ, các phân hệ điện tử và kết nối màn hình của mẫu nghiên cứu.</p>
       <div class="drawing-grid">
         <article>
-          <a href="./drawings/m-01.svg"><img src="./drawings/m-01.svg" alt="Ba hình chiếu có kích thước của vỏ Tri Kỷ" loading="lazy" width="1160" height="780">
+          <a href="./drawings/m-01.html"><img src="./drawings/m-01.svg" alt="Ba hình chiếu có kích thước của vỏ Tri Kỷ" loading="lazy" width="1160" height="780">
             <h3>Vỏ và vị trí lắp <span>M‑01</span></h3></a>
         </article>
         <article>
-          <a href="./drawings/e-01.svg"><img src="./drawings/e-01.svg" alt="Sơ đồ nguồn, vi điều khiển, micro, loa và màn hình" loading="lazy" width="1160" height="780">
+          <a href="./drawings/e-01.html"><img src="./drawings/e-01.svg" alt="Sơ đồ nguồn, vi điều khiển, micro, loa và màn hình" loading="lazy" width="1160" height="780">
             <h3>Sơ đồ nguyên lý phân hệ <span>E‑01</span></h3></a>
         </article>
         <article>
-          <a href="./drawings/e-02.svg"><img src="./drawings/e-02.svg" alt="Sơ đồ SPI qua IC chuyển mức đến đầu nối màn hình" loading="lazy" width="1160" height="780">
+          <a href="./drawings/e-02.html"><img src="./drawings/e-02.svg" alt="Sơ đồ SPI qua IC chuyển mức đến đầu nối màn hình" loading="lazy" width="1160" height="780">
             <h3>Màn hình và chuyển mức <span>E‑02</span></h3></a>
         </article>
         <article>
-          <a href="./drawings/e-03.svg"><img src="./drawings/e-03.svg" alt="Sơ đồ PDM, ngắt micro bằng phần cứng và I²S đến loa" loading="lazy" width="1160" height="780">
+          <a href="./drawings/e-03.html"><img src="./drawings/e-03.svg" alt="Sơ đồ PDM, ngắt micro bằng phần cứng và I²S đến loa" loading="lazy" width="1160" height="780">
             <h3>Thu âm, ngắt micro và phát loa <span>E‑03</span></h3></a>
         </article>
       </div>

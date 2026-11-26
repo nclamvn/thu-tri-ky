@@ -1,43 +1,159 @@
-const section=document.getElementById('model');
-const still=document.getElementById('model-still');
-const status=document.getElementById('model-status');
-const motion=document.getElementById('motion-note');
-const buttons=Array.from(document.querySelectorAll('button[data-view]'));
-const states={
+import {byId,modules} from './viewer/assembly-data.js';
+import {bomByKey,bomByModule} from './viewer/bom-data.js';
+import {layers} from './viewer/simulation-data.js';
+
+const id=name=>document.getElementById(name);
+const model=id('model');
+const still=id('model-still');
+const slider=id('travel');
+const controls=Array.from(document.querySelectorAll('button[data-view]'));
+const panel=id('component-panel');
+const list=id('component-list');
+const views={
   front:{camera:'front',amount:0,alt:'Tri Kỷ nhìn chính diện'},
   rear:{camera:'rear',amount:0,alt:'Vỏ sau với cụm lỗ loa'},
   exploded:{camera:'angle',amount:1,alt:'Các cấu kiện Tri Kỷ ở góc phân rã'},
 };
-let viewer,current='front';
+const state={view:'front',amount:0,part:null,layer:0,item:null,isolated:false};
+const copperKeys=new Set(layers.map(([key])=>key));
+let viewer,renderedList;
 
-function show(view) {
-  const {camera,amount,alt}=states[view];
-  current=view;
-  still.src=`./media/${view}.webp`;
-  still.alt=alt;
-  if(viewer){
-    viewer.setState({amount,layer:0,part:amount?'logic':'face',isolated:false,
-      links:false,mood:'idle',detail:false,stack:false,item:null});
-    viewer.setCamera(camera);
+function componentButton(key,title,ref,select){
+  const row=document.createElement('li');
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='text-action';
+  button.dataset.key=key;
+  if(ref){
+    const code=document.createElement('span');
+    code.className='component-code';
+    code.textContent=ref;
+    button.append(code,' ');
   }
-  for(const button of buttons)button.setAttribute('aria-pressed',String(button.dataset.view===view));
+  button.append(title);
+  button.addEventListener('click',()=>{
+    select(key);
+    if(viewer&&select===selectItem)model.scrollIntoView({block:'start'});
+    else id(select===selectItem?'component-readout':'component-title').scrollIntoView({block:'nearest'});
+  });
+  row.append(button);
+  return row;
 }
+
+function renderPanel(){
+  const part=byId[state.part];
+  const item=bomByKey[state.item];
+  panel.hidden=!part&&state.view!=='exploded';
+  id('back-model').hidden=!part;
+  id('component-title').textContent=part?part.name:'Các cụm linh kiện';
+  id('component-readout').hidden=!item;
+  id('show-group').hidden=!state.isolated;
+  if(item){
+    id('component-ref').textContent=item.ref+' · '+item.qty+' '+item.unit.toLocaleLowerCase('vi');
+    id('component-name').textContent=item.name;
+    id('component-purpose').textContent=item.purpose;
+  }
+  if(renderedList!==state.part){
+    renderedList=state.part;
+    const rows=part
+      ?bomByModule[part.id].map(row=>componentButton(row.key,row.name,row.ref,selectItem))
+      :modules.map(row=>componentButton(row.id,row.name,'',selectPart));
+    list.replaceChildren(...rows);
+  }
+  for(const button of list.querySelectorAll('button')){
+    if(part)button.setAttribute('aria-pressed',String(button.dataset.key===state.item));
+  }
+}
+
+function render(){
+  const {alt}=views[state.view];
+  const stack=copperKeys.has(state.item);
+  const value=Math.round(100*(state.part?state.layer:state.amount));
+  if(still.getAttribute('src')!==`./media/${state.view}.webp`)still.src=`./media/${state.view}.webp`;
+  still.alt=alt;
+  slider.disabled=!viewer;
+  slider.value=String(value);
+  id('travel-label').textContent=stack?'Tách lớp đồng':state.part?'Tách linh kiện':'Độ tách lớp';
+  id('travel-value').textContent=value+'%';
+  model.dataset.amount=String(value);
+  model.dataset.part=state.part||'';
+  model.dataset.item=state.item||'';
+  model.dataset.isolated=String(state.isolated);
+  for(const button of controls){
+    button.setAttribute('aria-pressed',String(!state.part&&button.dataset.view===state.view));
+  }
+  viewer?.setState({amount:state.amount,layer:state.layer,part:state.part||'face',
+    isolated:state.isolated,links:false,mood:'idle',detail:!!state.part,stack,item:state.item});
+  renderPanel();
+}
+
+function show(view){
+  Object.assign(state,{view,amount:views[view].amount,part:null,item:null,isolated:false});
+  render();
+  viewer?.setCamera(views[view].camera);
+}
+
+function selectPart(key){
+  if(!byId[key])return;
+  Object.assign(state,{part:key,item:null,isolated:false,layer:key==='logic'?0:1});
+  render();
+  viewer?.setCamera('angle');
+}
+
+function selectItem(key){
+  const item=bomByKey[key];
+  if(!item||item.module!==state.part)return;
+  state.item=key;
+  state.isolated=key!=='logic-pcb';
+  if(copperKeys.has(key))state.layer=1;
+  if(key==='logic-pcb')state.layer=0;
+  render();
+}
+
+for(const button of controls)button.addEventListener('click',()=>show(button.dataset.view));
+slider.addEventListener('input',()=>{
+  const value=Number(slider.value)/100;
+  if(state.part){
+    state.layer=value;
+    state.isolated=false;
+  }else{
+    state.amount=value;
+    if(value>0)state.view='exploded';
+    else if(state.view==='exploded')state.view='front';
+  }
+  render();
+});
+id('show-group').addEventListener('click',()=>{
+  state.isolated=false;
+  if(copperKeys.has(state.item)){state.item=null;state.layer=0;}
+  render();
+  id('travel').focus();
+});
+id('back-model').addEventListener('click',()=>{
+  Object.assign(state,{part:null,item:null,isolated:false});
+  render();
+  viewer?.setCamera(views[state.view].camera);
+  controls.find(button=>button.dataset.view===state.view).focus({preventScroll:true});
+});
+
 function fallback(){
   viewer=null;
-  section.dataset.webgl='fallback';
-  motion.hidden=true;
-  status.textContent='Đang xem ảnh của mô hình.';
+  model.dataset.webgl='fallback';
+  id('motion-note').hidden=true;
+  id('model-status').textContent='Đang xem ảnh. Danh mục linh kiện vẫn mở được.';
+  render();
 }
-for(const button of buttons)button.addEventListener('click',()=>show(button.dataset.view));
 try{
   const {createViewer}=await import('./viewer/hardware-view.js');
-  viewer=createViewer(document.getElementById('viewer'),document.getElementById('viewer-markers'),{
-    select(){}, item(){}, cameraChanged(){}, unavailable:fallback,
-    rendered({triangles}){
-      if(triangles>0&&section.dataset.webgl==='loading')section.dataset.webgl='live';
+  viewer=createViewer(id('viewer'),id('viewer-markers'),{
+    select:selectPart,item:selectItem,cameraChanged(){},unavailable:fallback,
+    rendered({triangles,population}){
+      if(triangles>0&&model.dataset.webgl==='loading')model.dataset.webgl='live';
+      model.dataset.population=String(population);
     },
   });
-  show(current);
+  render();
+  viewer.setCamera(views[state.view].camera);
 }catch{
   fallback();
 }
