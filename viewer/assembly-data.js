@@ -1,4 +1,4 @@
-import {physical} from './simulation-data.js';
+import {physical} from './simulation-data.js?v=a0cc1c2d1068';
 
 // Simulation coordinates in millimetres, Y up, +Z toward the user.
 // Each position refers to the centre of a module, except full shell meshes whose origin is at the base.

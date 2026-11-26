@@ -1,8 +1,8 @@
-import * as THREE from './three/three.module.js';
-import {modules, connections, inspectionAngles, logicSockets, boardMounts, carrierFit} from './assembly-data.js';
-import {entries, bomByModule, logicPassives} from './bom-data.js';
-import {layers,physical,wroomLandRows} from './simulation-data.js';
-import {baseSeam,crown,frontSurface,lensCurves,lensStart,rearGrille,rearSurface,shellPoint,shellSection,shellSplit,wallThickness} from './enclosure-profile.js';
+import * as THREE from './three/three.module.js?v=a0cc1c2d1068';
+import {modules, connections, inspectionAngles, logicSockets, boardMounts, carrierFit} from './assembly-data.js?v=a0cc1c2d1068';
+import {entries, bomByModule, logicPassives} from './bom-data.js?v=a0cc1c2d1068';
+import {layers,physical,wroomLandRows} from './simulation-data.js?v=a0cc1c2d1068';
+import {baseSeam,crown,frontSurface,lensCurves,lensStart,rearGrille,rearSurface,shellPoint,shellSection,shellSplit,wallThickness} from './enclosure-profile.js?v=a0cc1c2d1068';
 
 function canvasTexture(width, height) {
   const canvas = document.createElement('canvas');

@@ -1,5 +1,5 @@
-import {modules} from './assembly-data.js';
-import {layers,physical} from './simulation-data.js';
+import {modules} from './assembly-data.js?v=a0cc1c2d1068';
+import {layers,physical} from './simulation-data.js?v=a0cc1c2d1068';
 
 // A row describes a selectable scene group. Counts apply to this concept only.
 const inventory = {

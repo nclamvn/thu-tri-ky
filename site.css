@@ -1,5 +1,5 @@
-@font-face{font-family:Lora;src:url('./fonts/lora.ttf') format('truetype');font-weight:400 700;font-display:swap}
-@font-face{font-family:BeVietnam;src:url('./fonts/be.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Lora;src:url('./fonts/lora.ttf?v=a0cc1c2d1068') format('truetype');font-weight:400 700;font-display:swap}
+@font-face{font-family:BeVietnam;src:url('./fonts/be.ttf?v=a0cc1c2d1068') format('truetype');font-display:swap}
 *{box-sizing:border-box}
 :root{--ink:#201d1a;--secondary:#575451;--rule:#ddd;--accent:#77533b;color:var(--ink);background:#fff;font:15px/1.55 BeVietnam,system-ui,sans-serif}
 body{margin:0}

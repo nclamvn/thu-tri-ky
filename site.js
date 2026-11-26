@@ -1,6 +1,6 @@
-import {byId,modules} from './viewer/assembly-data.js';
-import {bomByKey,bomByModule} from './viewer/bom-data.js';
-import {layers} from './viewer/simulation-data.js';
+import {byId,modules} from './viewer/assembly-data.js?v=a0cc1c2d1068';
+import {bomByKey,bomByModule} from './viewer/bom-data.js?v=a0cc1c2d1068';
+import {layers} from './viewer/simulation-data.js?v=a0cc1c2d1068';
 
 const id=name=>document.getElementById(name);
 const hero=id('product-hero');
@@ -12,13 +12,13 @@ const controls=Array.from(document.querySelectorAll('button[data-view]'));
 const panel=id('component-panel');
 const list=id('component-list');
 const views={
-  front:{camera:'front',amount:0,alt:'Tri Kỷ nhìn chính diện'},
-  rear:{camera:'rear',amount:0,alt:'Vỏ sau với cụm lỗ loa'},
-  exploded:{camera:'angle',amount:1,alt:'Các cấu kiện Tri Kỷ ở góc phân rã'},
+  front:{camera:'front',amount:0,image:'./media/front.webp?v=a0cc1c2d1068',alt:'Tri Kỷ nhìn chính diện'},
+  rear:{camera:'rear',amount:0,image:'./media/rear.webp?v=a0cc1c2d1068',alt:'Vỏ sau với cụm lỗ loa'},
+  exploded:{camera:'angle',amount:1,image:'./media/exploded.webp?v=a0cc1c2d1068',alt:'Các cấu kiện Tri Kỷ ở góc phân rã'},
 };
 const state={view:'front',amount:0,part:null,layer:0,item:null,isolated:false};
 const copperKeys=new Set(layers.map(([key])=>key));
-let viewer,renderedList;
+let viewer,renderedList,renderedPanel;
 
 function componentButton(key,title,ref,select){
   const row=document.createElement('li');
@@ -43,9 +43,13 @@ function componentButton(key,title,ref,select){
 }
 
 function renderPanel(){
+  const visible=!!state.part||state.view==='exploded';
+  const nextPanel=JSON.stringify([visible,state.part,state.item,state.isolated]);
+  if(nextPanel===renderedPanel)return;
+  renderedPanel=nextPanel;
   const part=byId[state.part];
   const item=bomByKey[state.item];
-  panel.hidden=!part&&state.view!=='exploded';
+  panel.hidden=!visible;
   id('back-model').hidden=!part;
   id('component-title').textContent=part?part.name:'Các cụm linh kiện';
   id('component-readout').hidden=!item;
@@ -68,11 +72,13 @@ function renderPanel(){
 }
 
 function render(){
-  const {alt}=views[state.view];
   const stack=copperKeys.has(state.item);
   const value=Math.round(100*(state.part?state.layer:state.amount));
-  if(still.getAttribute('src')!==`./media/${state.view}.webp`)still.src=`./media/${state.view}.webp`;
-  still.alt=alt;
+  if(model.dataset.webgl!=='live'){
+    const {image,alt}=views[state.view];
+    if(still.getAttribute('src')!==image)still.src=image;
+    still.alt=alt;
+  }
   slider.disabled=!viewer;
   slider.value=String(value);
   id('travel-label').textContent=stack?'Tách lớp đồng':state.part?'Tách linh kiện':'Độ tách lớp';
@@ -172,7 +178,7 @@ function fallback(){
   render();
 }
 try{
-  const {createViewer}=await import('./viewer/hardware-view.js?v=36fdbc66191e');
+  const {createViewer}=await import('./viewer/hardware-view.js?v=a0cc1c2d1068');
   viewer=createViewer(id('viewer'),id('viewer-markers'),{
     select:selectPart,item:selectItem,cameraChanged(){},unavailable:fallback,
     interacted:enterExplore,

@@ -1,8 +1,8 @@
-import * as THREE from './three/three.module.js';
-import {makeAssembly} from './hardware.js';
-import {modules} from './assembly-data.js';
-import {bomByModule, entries} from './bom-data.js';
-import {layers} from './simulation-data.js';
+import * as THREE from './three/three.module.js?v=a0cc1c2d1068';
+import {makeAssembly} from './hardware.js?v=a0cc1c2d1068';
+import {modules} from './assembly-data.js?v=a0cc1c2d1068';
+import {bomByModule, entries} from './bom-data.js?v=a0cc1c2d1068';
+import {layers} from './simulation-data.js?v=a0cc1c2d1068';
 
 const touchLimit=6;
 const copperKeys=new Set(layers.map(([key])=>key));
